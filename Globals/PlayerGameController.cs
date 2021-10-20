@@ -24,6 +24,7 @@ namespace Assets.Scripts.Globals
             }
             set
             {
+                MessagingSystem.ToggleMessagePanel(false);
                 if (currentSelectedTarget!= null)
                 {
                     currentSelectedTarget.GetComponent<GamePieceControl>().CurrentCubeBelowPiece.GetComponent<TileMechanics>().IsHighlighted = false;
@@ -49,8 +50,22 @@ namespace Assets.Scripts.Globals
         {
             if (ActionBeingSelected)
             {
+                // Warn the user if they try to move while action is active
+                if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || 
+                    Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D) || 
+                    Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.LeftArrow) || 
+                    Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.RightArrow))
+                {
+                    MessagingSystem.SetMessageText("Currently in Action Mode!");
+                }
+
                 return;
             }
+            else
+            {
+                MessagingSystem.ToggleMessagePanel(false);
+            }
+
             if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) && GameTurnMechanic.InitiativeList[GameTurnMechanic.CurrentTurnNumber].GetComponent<GamePieceControl>().MyCreatureStats.TotalSpeedLeft > 0)
             {
                 GameTurnMechanic.InitiativeList[GameTurnMechanic.CurrentTurnNumber].transform.position += new Vector3(0, 0, 1);
@@ -230,6 +245,7 @@ namespace Assets.Scripts.Globals
         {
             if (CurrentSelectedTarget == null)
             {
+                MessagingSystem.SetMessageText("Please select a valid target!");
                 Debug.Log("Please select a valid target!");
                 return;
             }
@@ -237,9 +253,11 @@ namespace Assets.Scripts.Globals
             {
                 if (DistanceFromTarget.x <= 1 && DistanceFromTarget.z <= 1)
                 {
+                    MessagingSystem.SetMessageText("YOU ARE ATTACKING " + CurrentSelectedTarget.name);
                     Debug.Log("YOU ARE ATTACKING " + CurrentSelectedTarget.name);
                     if (DiceNeedsRolled)
                     {
+                        MessagingSystem.SetMessageText("NEED TO ROLL DIC!");
                         Debug.Log("NEED TO ROLL DIC!");
                         // FORCE PLAYER TO ROLL DICE OR ALLOW TO CANCEL
                         return;
@@ -248,6 +266,7 @@ namespace Assets.Scripts.Globals
                     GameTurnMechanic.InitiativeList[GameTurnMechanic.CurrentTurnNumber].GetComponent<GamePieceControl>().MyCreatureStats.TotalActionPointsLeft--;
 
                     CalculateHitToDefense();
+                    MessagingSystem.SetMessageText("YOU HAVE ATTACKED A CREATURE!");
                     Debug.Log("YOU HAVE ATTACKED A CREATURE!");
 
                     CurrentSelectedTarget = null;
@@ -256,6 +275,7 @@ namespace Assets.Scripts.Globals
                 }
                 else
                 {
+                    MessagingSystem.SetMessageText("YOU CANNOT HIT " + CurrentSelectedTarget.name);
                     Debug.Log("YOU CANNOT HIT" + CurrentSelectedTarget.name);
                 }
             }

@@ -52,6 +52,7 @@ public class DiceBehavior : MonoBehaviour
     }
     void OnMouseDown()
     {
+        MessagingSystem.ToggleMessagePanel(false);
         DiceManager.CurrentSelectedDice = this.gameObject;
         transform.Rotate(new Vector3(10f, 5f, 0));
         GetComponent<Rigidbody>().useGravity = false;
